@@ -22,6 +22,9 @@ $(call inherit-product, device/htc/msm8960-common/msm8960.mk)
 
 DEVICE_PACKAGE_OVERLAYS += device/htc/dlx/overlay
 
+# The gps config appropriate for this device
+PRODUCT_COPY_FILES += device/common/gps/gps.conf_US_SUPL:system/etc/gps.conf
+
 # Ramdisk
 PRODUCT_COPY_FILES += \
     device/htc/dlx/ramdisk/fstab.dlx:root/fstab.dlx \
@@ -120,6 +123,7 @@ PRODUCT_COPY_FILES += \
 
 # NFC
 PRODUCT_PACKAGES += \
+    nfc.msm8960 \
     libnfc \
     libnfc_ndef \
     libnfc_jni \
@@ -135,6 +139,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
         frameworks/native/data/etc/android.hardware.telephony.cdma.xml:system/etc/permissions/android.hardware.telephony.cdma.xml \
         frameworks/native/data/etc/android.hardware.telephony.gsm.xml:system/etc/permissions/android.hardware.telephony.gsm.xml
+
+# Increase the HWUI font cache since we have tons of RAM
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.hwui.text_cache_width=2048
 
 # Extra properties
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -185,3 +193,6 @@ $(call inherit-product-if-exists, vendor/htc/dlx/dlx-vendor.mk)
 
 # call dalvik heap config
 $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-dalvik-heap.mk)
+
+# call hwui memory config
+$(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-hwui-memory.mk)
