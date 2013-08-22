@@ -1,1 +1,1 @@
-add_lunch_combo full_dlx-userdebug
+add_lunch_combo xenonhd_dlx-eng

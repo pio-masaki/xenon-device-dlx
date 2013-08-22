@@ -51,10 +51,10 @@ version 4 - added sms to mms text threshold.
     <int name="maxMessageCountPerThread">5000</int>
 
     <!-- User-Agent parameter used in MMS http request -->
-    <string name="userAgent">ADR6425LVW</string>
+    <string name="userAgent">ADR6435LVW</string>
 
     <!-- UAProf URL -->
-    <string name="uaProfUrl">http://uaprof.vtext.com/pcd/adr6425/adr6425.xml</string>
+    <string name="uaProfUrl">http://uaprof.vtext.com/pcd/adr6435/adr6435.xml</string>
 
     <!-- Maximum number of recipients allowed per message. Use a value of -1
          to indicate no limit. -->
@@ -78,4 +78,3 @@ version 4 - added sms to mms text threshold.
     <int name="maxMessageTextSize">-1</int>
 
 </mms_config>
-

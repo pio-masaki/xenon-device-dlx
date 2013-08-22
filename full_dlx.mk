@@ -20,25 +20,31 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 # common msm8960 configs
 $(call inherit-product, device/htc/msm8960-common/msm8960.mk)
 
-DEVICE_PACKAGE_OVERLAYS += device/htc/dlx/overlay
+# Inherit from dlx device
+$(call inherit-product, device/htc/dlx/device.mk)
 
 # The gps config appropriate for this device
 PRODUCT_COPY_FILES += device/common/gps/gps.conf_US_SUPL:system/etc/gps.conf
 
 # Ramdisk
-PRODUCT_COPY_FILES += \
-    device/htc/dlx/ramdisk/fstab.dlx:root/fstab.dlx \
-    device/htc/dlx/ramdisk/init.dlx.rc:root/init.dlx.rc \
-    device/htc/dlx/ramdisk/ueventd.dlx.rc:root/ueventd.dlx.rc \
-    device/htc/dlx/ramdisk/init.dlx.usb.rc:root/init.dlx.usb.rc \
-    device/htc/dlx/ramdisk/init.qcom.sh:root/init.qcom.sh \
-    device/htc/dlx/ramdisk/init.qcom.firmware_links.sh:root/init.qcom.firmware_links.sh
+PRODUCT_PACKAGES += \
+    fstab.dlx \
+    init.qcom.firmware_links.sh \
+    init.qcom.sh \
+    init.dlx.rc \
+    init.dlx.usb.rc \
+    ueventd.dlx.rc
 
-# Custom Recovery and Charging
-PRODUCT_COPY_FILES += \
-    device/htc/dlx/recovery/sbin/choice_fn:recovery/root/sbin/choice_fn \
-    device/htc/dlx/recovery/sbin/detect_key:recovery/root/sbin/detect_key \
-    device/htc/dlx/recovery/sbin/offmode_charging:recovery/root/sbin/offmode_charging
+PRODUCT_PACKAGES += \
+    libnetcmdiface
+
+# Recovery
+PRODUCT_PACKAGES += \
+    init.recovery.dlx.rc \
+    choice_fn \
+    detect_key \
+    offmode_charging \
+    power_test
 
 # Get the sample verizon list of APNs
 PRODUCT_COPY_FILES += device/sample/etc/apns-conf_verizon.xml:system/etc/apns-conf.xml
@@ -50,21 +56,25 @@ else
     NFCEE_ACCESS_PATH := device/htc/dlx/configs/nfcee_access_debug.xml
 endif
 PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
+    frameworks/native/data/etc/android.hardware.audio.low_latency.xml:system/etc/permissions/android.hardware.audio.low_latency.xml \
     $(NFCEE_ACCESS_PATH):system/etc/nfcee_access.xml \
     frameworks/base/nfc-extras/com.android.nfc_extras.xml:system/etc/permissions/com.android.nfc_extras.xml \
-    frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml
+    frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
+    frameworks/native/data/etc/android.hardware.wifi.direct.xml:system/etc/permissions/android.hardware.wifi.direct.xml
 
 # Media configs
 PRODUCT_COPY_FILES += device/htc/dlx/configs/AudioBTID.csv:system/etc/AudioBTID.csv
-
-# vold config
-PRODUCT_COPY_FILES += \
-    device/htc/dlx/configs/vold.fstab:system/etc/vold.fstab
+PRODUCT_COPY_FILES += device/htc/dlx/configs/AudioBTIDnew.csv:system/etc/AudioBTIDnew.csv
 
 # wifi config
 PRODUCT_COPY_FILES += \
     device/htc/dlx/configs/calibration:/system/etc/calibration \
     device/htc/dlx/configs/calibration.gpio4:/system/etc/calibration.gpio4
+
+# Audio config
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/audio_policy.conf:system/etc/audio_policy.conf
 
 # Sound configs
 PRODUCT_COPY_FILES += \
@@ -118,9 +128,6 @@ PRODUCT_PACKAGES += \
         libgps.utils \
         gps.msm8960
 
-PRODUCT_COPY_FILES += \
-    device/htc/dlx/prebuilt/lib/libloc_api_v02.so:system/lib/libloc_api_v02.so
-
 # NFC
 PRODUCT_PACKAGES += \
     nfc.msm8960 \
@@ -156,13 +163,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.com.google.clientidbase.gmm=android-htc \
     ro.com.google.clientidbase.ms=android-verizon \
     gsm.sim.operator.alpha = Verizon \
-    gsm.sim.operator.numeric = 310012 \
+    gsm.sim.operator.numeric = 311480 \
     gsm.sim.operator.iso-country = us \
     gsm.operator.alpha = Verizon \
-    gsm.operator.numeric = 310012 \
+    gsm.operator.numeric = 311480 \
     gsm.operator.iso-country = us \
     ro.cdma.home.operator.alpha = Verizon \
-    ro.cdma.home.operator.numeric = 310012 \
+    ro.cdma.home.operator.numeric = 311480 \
     ro.cdma.data_retry_config=max_retries=infinite,0,0,60000,120000,480000,900000 \
     ro.ril.set.mtusize=1428 \
     persist.radio.snapshot_enabled=1 \
@@ -170,6 +177,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.config.multimode_cdma=1 \
     ro.config.combined_signal=true \
     ro.gsm.data_retry_config=max_retries=infinite,5000,5000,60000,120000,480000,900000 \
+    ro.opengles.version=196608 \
     persist.eons.enabled=false
 
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
@@ -187,9 +195,6 @@ PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
 PRODUCT_AAPT_CONFIG := normal hdpi xhdpi xxhdpi
 PRODUCT_AAPT_PREF_CONFIG := xhdpi xxhdpi
 PRODUCT_LOCALES += en_US
-
-# call the proprietary setup
-$(call inherit-product-if-exists, vendor/htc/dlx/dlx-vendor.mk)
 
 # call dalvik heap config
 $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-dalvik-heap.mk)
